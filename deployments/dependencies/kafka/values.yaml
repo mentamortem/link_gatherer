@@ -1,0 +1,15 @@
+image:
+  repository: bitnamilegacy/kafka
+zookeeper:
+  replicaCount: 1
+  persistence:
+    enabled: false
+
+replicaCount: 1
+
+auth:
+  clientProtocol: sasl
+  sasl:
+    mechanisms: plain
+    jaas:
+      enabled: true

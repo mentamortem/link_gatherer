@@ -1,0 +1,7 @@
+primary:
+  persistence:
+    enabled: true
+    size: 10Gi
+auth:
+  username: user
+  database: appdb
