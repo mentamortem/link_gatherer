@@ -1,8 +1,0 @@
-architecture: standalone
-auth:
-  enabled: true
-  # password не указываем → генерится автоматически
-master:
-  persistence:
-    enabled: true
-    size: 5Gi
