@@ -6,6 +6,7 @@ import (
 
 func SetupAPI() *gin.Engine {
 	router := gin.Default()
+	router.Use(ErrorHandler())
 	router.POST("/getlinks", Posthandler)
 	return router
 }

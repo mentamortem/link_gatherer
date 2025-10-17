@@ -7,6 +7,7 @@ import (
 
 func main() {
 	api := collector.SetupAPI()
+	//fmt.Print("Starting API on 4343")
 	if err := api.Run(":4343"); err != nil {
 		fmt.Print("Test")
 	}
