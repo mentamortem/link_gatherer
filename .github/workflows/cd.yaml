@@ -43,4 +43,7 @@ jobs:
         env:
           TAG: ${{ github.sha }}
         run: |
+          helm repo remove bitnami
+          helm repo add bitnami https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
+          helm repo update
           helmfile sync -f deployments/helmfile.yaml
