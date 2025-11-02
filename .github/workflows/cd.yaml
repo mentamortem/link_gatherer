@@ -3,7 +3,7 @@ name: Build and Deploy (self-hosted)
 
 on:
   push:
-    branches: [ main ]
+    branches: [ dev ]
 
 env:
   IMAGE_NAME: "foodnamental/link_collector"
