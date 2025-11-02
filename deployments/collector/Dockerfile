@@ -5,15 +5,14 @@ FROM golang:1.25 AS builder
 WORKDIR /app
 
 # Копируем go.mod и go.sum для кеширования зависимостей
-COPY go.mod ./
+COPY go.mod go.sum ./
 RUN go mod download
 
 # Копируем исходники
-COPY cmd/ cmd/
-COPY internal/ internal/
+COPY . ./
 
 # Собираем бинарь
-RUN CGO_ENABLED=0 GOOS=linux go build -o service ./cmd/link_collector
+RUN CGO_ENABLED=0 GOOS=linux go build -o service ./cmd/collector
 
 # Финальный образ
 FROM alpine:3.19
@@ -28,7 +27,7 @@ WORKDIR /app
 COPY --from=builder /app/service .
 
 # Открываем порт (замени на свой)
-EXPOSE 1111
+EXPOSE 4343
 
 # Запускаем сервис
 CMD ["./service"]

@@ -1,0 +1,46 @@
+# yaml
+name: Build and Deploy (self-hosted)
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  IMAGE_NAME: "foodnamental/link_collector"
+
+jobs:
+  build-and-deploy:
+    runs-on: [self-hosted, local]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker (assumes Docker installed on runner)
+        run: docker --version
+
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Build image
+        run: |
+          TAG=${{ github.sha }}
+          docker build -t ${IMAGE_NAME}:${TAG} -f deployments/collector/Dockerfile deployments/collector
+          docker tag ${IMAGE_NAME}:${TAG} ${IMAGE_NAME}:latest
+
+      - name: Push images
+        run: |
+          TAG=${{ github.sha }}
+          docker push ${IMAGE_NAME}:${TAG}
+          docker push ${IMAGE_NAME}:latest
+
+      - name: Configure kubeconfig
+        run: |
+          echo "${{ secrets.KUBE_CONFIG }}" > kubeconfig
+          export KUBECONFIG=$PWD/kubeconfig
+          chmod 600 kubeconfig
+
+      - name: Deploy with Helm
+        env:
+          TAG: ${{ github.sha }}
+        run: |
+          helmfile sync -f deployments/helmfile.yaml
