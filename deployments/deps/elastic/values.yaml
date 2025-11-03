@@ -1,5 +1,5 @@
 image: "docker.io/elastic/elasticsearch"
-imageTag: "8.15.3"
+imageTag: "latest"
 
 
 resources:
