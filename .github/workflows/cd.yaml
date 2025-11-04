@@ -39,6 +39,9 @@ jobs:
           export KUBECONFIG=$PWD/kubeconfig
           chmod 600 kubeconfig
 
+      - name: Install helm-diff plugin
+        run: helm plugin install https://github.com/databus23/helm-diff
+
       - name: Deploy with Helmfile
         env:
           TAG: ${{ github.sha }}
