@@ -46,4 +46,4 @@ jobs:
           helm repo add bitnami https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
           helm repo add elastic https://helm.elastic.co
           helm repo update
-          helmfile apply --args "--recreate-pods" --skip-diff -f deployments/helmfile.yaml
+          helmfile apply -f deployments/helmfile.yaml
