@@ -27,7 +27,7 @@ jobs:
           docker build -t ${IMAGE_NAME}:${TAG} -f deployments/collector/Dockerfile .
           docker tag ${IMAGE_NAME}:${TAG} ${IMAGE_NAME}:latest
 
-      - name: Push images
+      - name: Push imagess
         run: |
           TAG=${{ github.sha }}
           docker push ${IMAGE_NAME}:${TAG}
