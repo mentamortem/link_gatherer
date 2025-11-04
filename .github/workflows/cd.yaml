@@ -49,4 +49,4 @@ jobs:
           helm repo add bitnami https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
           helm repo add elastic https://helm.elastic.co
           helm repo update
-          helmfile apply -f deployments/helmfile.yaml
+          helmfile sync --set forceUpdate=$(date +%s) -f deployments/helmfile.yaml
