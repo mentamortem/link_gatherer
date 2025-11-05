@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: '{{ printf "%s-kafka-create-topics" .Release.Name }}'
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    metadata:
+      name: create-topics
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: create-topics
+          image: {{ printf "%s:%s" .Values.image.repository .Values.image.tag }}
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |
+              set -euo pipefail
+              BOOTSTRAP={{ if .Values.createTopics.bootstrapServer }}{{ .Values.createTopics.bootstrapServer }}{{ else }}{{ printf "%s-kafka:9092" .Release.Name }}{{ end }}
+              echo "Bootstrap server: $BOOTSTRAP"
+              {{- range .Values.createTopics.topics }}
+              echo "creating topic {{ .name }} (p={{ .partitions }} r={{ .replicationFactor }})"
+              /opt/bitnami/kafka/bin/kafka-topics.sh --create --bootstrap-server "$BOOTSTRAP" --topic {{ .name }} --partitions {{ .partitions }} --replication-factor {{ .replicationFactor }} || true
+              {{- end }}
+      serviceAccountName: default
+

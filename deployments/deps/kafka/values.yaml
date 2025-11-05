@@ -1,5 +1,6 @@
 image:
   repository: bitnamilegacy/kafka
+  tag: latest
 zookeeper:
   replicaCount: 1
   persistence:
@@ -13,3 +14,11 @@ auth:
     mechanisms: plain
     jaas:
       enabled: true
+
+createTopics:
+  enabled: true
+  bootstrapServer: ""
+  topics:
+    - name: links
+      partitions: 3
+      replicationFactor: 1
