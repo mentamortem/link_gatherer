@@ -4,18 +4,18 @@ repositories:
   - name: elastic
     url: https://helm.elastic.co
 
-releases:
-  - name: postgresql
-    namespace: default
-    chart: bitnami/postgresql
-    values:
-      - ./deps/postgresql/values.yaml
-
-  - name: redis
-    namespace: default
-    chart: bitnami/redis
-    values:
-      - ./deps/redis/values.yaml
+#releases:
+#  - name: postgresql
+#    namespace: default
+#    chart: bitnami/postgresql
+#    values:
+#      - ./deps/postgresql/values.yaml
+#
+#  - name: redis
+#    namespace: default
+#    chart: bitnami/redis
+#    values:
+#      - ./deps/redis/values.yaml
 
   - name: kafka
     namespace: default
@@ -23,11 +23,11 @@ releases:
     values:
       - ./deps/kafka/values.yaml
 
-  - name: elastic
-    namespace: default
-    chart: elastic/elasticsearch
-    values:
-      - ./deps/elastic/values.yaml
+#  - name: elastic
+#    namespace: default
+#    chart: elastic/elasticsearch
+#    values:
+#      - ./deps/elastic/values.yaml
   - name: link-collector
     namespace: default
     chart: ./collector
