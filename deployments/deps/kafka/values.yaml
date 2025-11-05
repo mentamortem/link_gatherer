@@ -1,10 +1,11 @@
 image:
   repository: bitnamilegacy/kafka
-  tag: latest
+  tag: 3.5.1
+
 zookeeper:
   replicaCount: 1
   persistence:
-    enabled: false
+    enabled: false  # для prod заменить на true
 
 replicaCount: 1
 
@@ -12,13 +13,63 @@ auth:
   clientProtocol: sasl
   sasl:
     mechanisms: plain
+    # Ожидается, что секрет kafka-sasl содержит ключи: username, password
+    usernameSecret:
+      name: kafka-sasl
+      usernameKey: username
+      passwordKey: password
     jaas:
       enabled: true
+      # Ожидается, что секрет kafka-jaas содержит ключ jaas.conf с содержимым JAAS
+      secret:
+        name: kafka-jaas
+        key: jaas.conf
+      configPath: /etc/jaas/jaas.conf
 
-createTopics:
-  enabled: true
-  bootstrapServer: ""
-  topics:
-    - name: links
-      partitions: 3
-      replicationFactor: 1
+extraDeploy:
+  - apiVersion: batch/v1
+    kind: Job
+    metadata:
+      name: kafka-create-topics
+    spec:
+      backoffLimit: 4
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: create-topics
+              image: bitnamilegacy/kafka
+              env:
+                - name: KAFKA_OPTS
+                  value: "-Djava.security.auth.login.config=/etc/jaas/jaas.conf"
+                - name: SASL_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: kafka-sasl
+                      key: username
+                - name: SASL_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: kafka-sasl
+                      key: password
+              volumeMounts:
+                - name: jaas-config
+                  mountPath: /etc/jaas
+                  readOnly: true
+              command:
+                - /bin/bash
+                - -ec
+                - |
+                  kafka-topics.sh --bootstrap-server kafka:9092 \
+                    --create --if-not-exists --topic user-events \
+                    --partitions 3 --replication-factor 1
+                  kafka-topics.sh --bootstrap-server kafka:9092 \
+                    --create --if-not-exists --topic audit-logs \
+                    --partitions 2 --replication-factor 1
+          volumes:
+            - name: jaas-config
+              secret:
+                secretName: kafka-jaas
+                items:
+                  - key: jaas.conf
+                    path: jaas.conf
