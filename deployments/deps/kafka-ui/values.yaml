@@ -1,0 +1,15 @@
+# File: `deployments/deps/kafka-ui/values.yaml`
+replicaCount: 1
+
+service:
+  type: ClusterIP
+  port: 8080
+
+# Простая конфигурация: укажите bootstrap-сервер брокера
+env:
+  KAFKA_CLUSTERS_0_NAME: "local"
+  KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka.default.svc.cluster.local:9092"
+# Если у вас SASL/JAAS — прописать переменные/секреты (пример ниже — placeholder)
+# KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL: "SASL_PLAINTEXT"
+# KAFKA_CLUSTERS_0_PROPERTIES_SASL_MECHANISM: "PLAIN"
+# KAFKA_CLUSTERS_0_PROPERTIES_SASL_JAAS_CONFIG: 'org.apache.kafka.common.security.plain.PlainLoginModule required username="__USER__" password="__PASS__";'

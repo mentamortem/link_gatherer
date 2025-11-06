@@ -2,7 +2,6 @@ package collector
 
 import (
 	"fmt"
-
 	"github.com/gin-gonic/gin"
 )
 

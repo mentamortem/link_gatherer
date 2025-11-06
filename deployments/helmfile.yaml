@@ -3,33 +3,46 @@ repositories:
     url: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
   - name: elastic
     url: https://helm.elastic.co
+  - name: hashicorp
+    url: https://helm.releases.hashicorp.com
+  - name: provectus
+    url: https://provectus.github.io/kafka-ui-charts
 
 releases:
   - name: postgresql
-    namespace: default
+    namespace: postgresql
     chart: bitnami/postgresql
     values:
       - ./deps/postgresql/values.yaml
 
   - name: redis
-    namespace: default
+    namespace: redis
     chart: bitnami/redis
     values:
       - ./deps/redis/values.yaml
 
   - name: kafka
-    namespace: default
+    namespace: kafka
+    createNamespace: true
     chart: bitnami/kafka
     values:
       - ./deps/kafka/values.yaml
 
   - name: elastic
-    namespace: default
+    namespace: elastic
     chart: elastic/elasticsearch
     values:
       - ./deps/elastic/values.yaml
+
+  - name: kafka-ui
+    namespace: kafka-ui
+    chart: provectus/kafka-ui
+    values:
+      - ./deps/kafka-ui/values.yaml
+
   - name: link-collector
-    namespace: default
+    namespace: service
+    createNamespace: true
     chart: ./collector
     values:
       - ./collector/values.yaml
