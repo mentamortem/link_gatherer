@@ -2,15 +2,19 @@ package collector
 
 import (
 	"fmt"
+
 	"github.com/gin-gonic/gin"
 )
 
-func Posthandler(c *gin.Context) {
-	raw, err := c.GetRawData()
-	format := c.GetHeader("Content-Type")
+func Posthandler(router *gin.Context) {
+	raw, err := router.GetRawData()
+	format := router.GetHeader("Content-Type")
 	if err != nil {
-		c.Error(fmt.Errorf("bad data: %w", err))
+		router.Error(fmt.Errorf("bad data: %w", err))
 		return
 	}
-	ProccessData(raw, format)
+	if err := ProccessData(raw, format); err != nil {
+		router.Error(fmt.Errorf("processing data error: %w", err))
+		return
+	}
 }
