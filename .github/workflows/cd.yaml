@@ -44,4 +44,4 @@ jobs:
           TAG: ${{ github.sha }}
         run: |
           helm repo update
-          helmfile apply -f deployments/helmfile.yaml
+          helmfile apply -f deployments/helmfile.yaml --kube-insecure-skip-tls-verify
