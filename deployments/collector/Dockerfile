@@ -12,13 +12,13 @@ RUN go mod download
 COPY . ./
 
 # Собираем бинарь
-RUN CGO_ENABLED=0 GOOS=linux go build -o service ./cmd/collector
+RUN CGO_ENABLED=1 GOOS=linux go build -o service ./cmd/collector
 
 # Финальный образ
 FROM alpine:3.19
 
 # Устанавливаем часовой пояс и сертификаты (если сервис ходит по HTTPS)
-RUN apk add --no-cache tzdata ca-certificates
+RUN apk add --no-cache tzdata ca-certificates pkgconf librdkafka-dev
 
 RUN mkdir /app
 WORKDIR /app
