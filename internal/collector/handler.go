@@ -17,4 +17,5 @@ func Posthandler(router *gin.Context) {
 		router.Error(fmt.Errorf("processing data error: %w", err))
 		return
 	}
+	fmt.Printf("Hello from Posthandler\n")
 }

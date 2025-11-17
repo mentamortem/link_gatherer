@@ -20,7 +20,7 @@ func ProccessData(data []byte, format string) error {
 			return fmt.Errorf("Failed to unmarshal json: %w", err)
 		}
 		for _, url := range links.URLS {
-			if err := SendLink(producer, "ulrs", []byte(url)); err != nil {
+			if err := SendLink(producer, "urls", []byte(url)); err != nil {
 				return fmt.Errorf("Failed to send link to Kafka: %w", err)
 			}
 		}
