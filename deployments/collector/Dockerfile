@@ -1,25 +1,24 @@
 # dockerfile
-# Сборка на Alpine (musl) с динамическим линкованием librdkafka
-FROM golang:1.25-alpine AS builder
+# Сборка и запуск на Debian (glibc), используем vendored librdkafka от confluent-kafka-go
+FROM golang:1.25-bookworm AS builder
 
 WORKDIR /app
 
-# Инструменты для cgo и dev-зависимости librdkafka
-RUN apk add --no-cache build-base pkgconf librdkafka-dev openssl-dev zstd-dev cyrus-sasl-dev
+# Инструменты для cgo
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential pkg-config ca-certificates && rm -rf /var/lib/apt/lists/*
 
 # Кеш зависимостей
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Сборка с тегом dynamic, чтобы использовать системную librdkafka (musl), а не vendored glibc
+# Сборка (без -tags dynamic — линкуемся с vendored glibc librdkafka)
 COPY . ./
-RUN CGO_ENABLED=1 GOOS=linux go build -tags dynamic -trimpath -ldflags "-s -w" -o /out/service ./cmd/collector
+RUN CGO_ENABLED=1 GOOS=linux go build -trimpath -ldflags "-s -w" -o /out/service ./cmd/collector
 
-# Финальный образ
-FROM alpine:3.19
+# Финальный образ на Debian
+FROM debian:bookworm-slim
 
-# Рантайм-зависимости librdkafka
-RUN apk add --no-cache tzdata ca-certificates librdkafka openssl zstd-libs cyrus-sasl
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates tzdata && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 COPY --from=builder /out/service ./service
