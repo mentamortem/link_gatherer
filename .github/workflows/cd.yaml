@@ -39,8 +39,6 @@ jobs:
           echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
           export KUBECONFIG=$HOME/.kube/config
           chmod 600 $HOME/.kube/config
-          echo $KUBECONFIG
-          cat $HOME/.kube/config
 
       - name: Deploy with Helmfile
         env:
