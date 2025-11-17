@@ -35,10 +35,12 @@ jobs:
 
       - name: Configure kubeconfig
         run: |
-          echo "${{ secrets.KUBE_CONFIG }}" > kubeconfig
-          export KUBECONFIG=$PWD/kubeconfig
-          export HELM_KUBECONTEXT='--insecure-skip-tls-verify'
-          chmod 600 kubeconfig
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
+          export KUBECONFIG=$HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+          echo $KUBECONFIG
+          cat $HOME/.kube/config
 
       - name: Deploy with Helmfile
         env:
