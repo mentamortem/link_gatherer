@@ -1,6 +1,6 @@
 # dockerfile
 # Этап сборки на Alpine (musl) для совместимости с финальным образом
-FROM golang:1.23-alpine AS builder
+FROM golang:1.25-alpine AS builder
 
 WORKDIR /app
 
