@@ -1,33 +1,28 @@
-# Этап сборки
-FROM golang:1.25 AS builder
+# dockerfile
+# Этап сборки на Alpine (musl) для совместимости с финальным образом
+FROM golang:1.23-alpine AS builder
 
-# Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Копируем go.mod и go.sum для кеширования зависимостей
+# Инструменты для сборки cgo и dev-зависимости
+RUN apk add --no-cache build-base pkgconf librdkafka-dev
+
+# Кешируем зависимости
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Копируем исходники
+# Копируем исходники и собираем
 COPY . ./
-
-# Собираем бинарь
-RUN CGO_ENABLED=1 GOOS=linux go build -o service ./cmd/collector
+RUN CGO_ENABLED=1 GOOS=linux go build -trimpath -ldflags "-s -w" -o /out/service ./cmd/collector
 
 # Финальный образ
 FROM alpine:3.19
 
-# Устанавливаем часовой пояс и сертификаты (если сервис ходит по HTTPS)
-RUN apk add --no-cache tzdata ca-certificates pkgconf librdkafka-dev
+# Рантайм-зависимости (без *-dev)
+RUN apk add --no-cache tzdata ca-certificates librdkafka
 
-RUN mkdir /app
 WORKDIR /app
+COPY --from=builder /out/service ./service
 
-# Копируем бинарь из билдера
-COPY --from=builder /app/service .
-
-# Открываем порт (замени на свой)
 EXPOSE 4343
-
-# Запускаем сервис
 CMD ["./service"]
